@@ -483,6 +483,7 @@ class XYEnvironment(Environment):
         thing.bump = self.some_things_at(destination, Obstacle)
         if not thing.bump:
             thing.location = destination
+            print(f"New Loc: {thing.location}")
             for o in self.observers:
                 o.thing_moved(thing)
             for t in thing.holding:
@@ -1062,6 +1063,9 @@ def test_agent(AgentFactory, steps, envs):
 
 
 class PuzzleAgent(Agent):
+
+    direction = Direction("right")
+
     def __str__(self):
         return "_"
 
@@ -1109,19 +1113,29 @@ class PuzzleEnvironment(XYEnvironment):
 
     def percept(self, agent):
         x, y = agent.location
-        result = {}
+        result = []
 
-        # UP direction
-        if not y - 1 < 0:
-            result["Up"] = self.list_things_at((x, y - 1))[0]
-        # DOWN direction
-        if not y + 1 >= self.height:
-            result["Down"] = self.list_things_at((x, y + 1))[0]
-        # RIGHT direction
-        if not x + 1 >= self.width:
-            result["Right"] = self.list_things_at((x + 1, y))[0]
         # LEFT direction
+        if not y - 1 < 0:
+            result.append((x, y - 1))
+        # RIGHT direction
+        if not y + 1 >= self.height:
+            result.append((x, y + 1))
+        # DOWN direction
+        if not x + 1 >= self.width:
+            result.append((x + 1, y))
+        # UP direction
         if not x - 1 < 0:
-            result["Left"] = self.list_things_at((x - 1, y))[0]
+            result.append((x - 1, y))
 
         return result
+
+    def execute_action(self, agent, action):
+
+        swapLocation = action
+        agentLocation = agent.location
+        adjBlock = self.list_things_at(swapLocation)[0]
+
+        # Swap Locations
+        agent.location = swapLocation
+        adjBlock.location = agentLocation
