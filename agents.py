@@ -1073,6 +1073,9 @@ class Block(Thing):
     def __str__(self):
         return f"{self.num}"
 
+    def __repr__(self):
+        return f"<Block: {self.num}>"
+
 
 class PuzzleEnvironment(XYEnvironment):
     def __init__(self, width=3, height=3):
