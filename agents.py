@@ -1063,7 +1063,7 @@ def test_agent(AgentFactory, steps, envs):
 
 class PuzzleAgent(Agent):
     def __str__(self):
-        return "-"
+        return "_"
 
 
 class Block(Thing):
@@ -1102,4 +1102,23 @@ class PuzzleEnvironment(XYEnvironment):
             for j in range(self.height):
                 row.extend(self.list_things_at((i, j)))
             result.append(row)
+        return result
+
+    def percept(self, agent):
+        x, y = agent.location
+        result = []
+
+        # UP direction
+        if not y - 1 < 0:
+            result.append({"Up": self.list_things_at((x, y - 1))})
+        # DOWN direction
+        if not y + 1 >= self.height:
+            result.append({"Down": self.list_things_at((x, y + 1))})
+        # RIGHT direction
+        if not x + 1 >= self.width:
+            result.append({"Right": self.list_things_at((x + 1, y))})
+        # LEFT direction
+        if not x - 1 < 0:
+            result.append({"Left": self.list_things_at((x - 1, y))})
+
         return result
