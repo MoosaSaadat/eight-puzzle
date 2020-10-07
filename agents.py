@@ -1106,19 +1106,19 @@ class PuzzleEnvironment(XYEnvironment):
 
     def percept(self, agent):
         x, y = agent.location
-        result = []
+        result = {}
 
         # UP direction
         if not y - 1 < 0:
-            result.append({"Up": self.list_things_at((x, y - 1))})
+            result["Up"] = self.list_things_at((x, y - 1))[0]
         # DOWN direction
         if not y + 1 >= self.height:
-            result.append({"Down": self.list_things_at((x, y + 1))})
+            result["Down"] = self.list_things_at((x, y + 1))[0]
         # RIGHT direction
         if not x + 1 >= self.width:
-            result.append({"Right": self.list_things_at((x + 1, y))})
+            result["Right"] = self.list_things_at((x + 1, y))[0]
         # LEFT direction
         if not x - 1 < 0:
-            result.append({"Left": self.list_things_at((x - 1, y))})
+            result["Left"] = self.list_things_at((x - 1, y))[0]
 
         return result
