@@ -1,5 +1,6 @@
 from agents import *
 import random
+import sys
 
 # ______________________________________________________________________________
 # 8-Puzzle Environment
@@ -47,7 +48,7 @@ class PuzzleEnvironment(XYEnvironment):
         for loc, num in zip(randCoords[1:], randNums):
             self.add_thing(Block(num), loc, True)
 
-    def get_world(self, show_walls=True):
+    def get_world(self):
         """Return the items in the world"""
         result = []
         for i in range(self.width):
@@ -88,25 +89,62 @@ class PuzzleEnvironment(XYEnvironment):
         agent.location = swapLocation
         adjBlock.location = agentLocation
 
+    def is_done(self):
+        allNums = list(range(1, self.totalBlocks))
+        for i in range(self.width):
+            for j in range(self.height):
+                currThing = self.list_things_at((i, j))[0]
+                if isinstance(currThing, Block):
+                    if allNums[i + j] != currThing.num:
+                        return False
+                else:
+                    return False
+                # Puzzle Solved - End game
+                if i == self.width - 1 and j == self.height - 2:
+                    return True
+
+    def run(self, steps=1000):
+        """Run the Environment for given number of time steps."""
+        for step in range(steps):
+            if self.is_done():
+                return step + 1
+            self.step()
+        return steps
+
+    def get_num_correct_pieces(self):
+        correct_pieces = 0
+        currPiece = 1
+        for i in range(self.width):
+            for j in range(self.height):
+                currThing = self.list_things_at((i, j))[0]
+                if isinstance(currThing, Block):
+                    if currThing.num == currPiece:
+                        correct_pieces += 1
+                currPiece += 1
+
+        return correct_pieces
+
 
 # ______________________________________________________________________________
 # Main Task
 
+if __name__ == "__main__":
+    puzzleSize = int(sys.argv[1])
+    movesAllowed = int(sys.argv[2])
 
-puzzle = PuzzleEnvironment()
+    puzzle = PuzzleEnvironment(puzzleSize, puzzleSize)
 
+    def print_world():
+        grid = puzzle.get_world()
+        for row in grid:
+            for col in row:
+                print(col, end=" ")
+            print()
 
-def print_world():
-    grid = puzzle.get_world()
-    for row in grid:
-        for col in row:
-            print(col, end=" ")
-        print()
+    movesUtilized = puzzle.run(movesAllowed)
+    correctPieces = puzzle.get_num_correct_pieces()
 
+    print(
+        f"No of correct pieces = {correctPieces}, no of moves utilized = {movesUtilized}"
+    )
 
-print_world()
-
-while True:
-    puzzle.step()
-    print_world()
-    input()
