@@ -73,6 +73,8 @@ class PuzzleEnvironment(XYEnvironment):
         # UP direction
         if not x - 1 < 0:
             result.append((x - 1, y))
+        # NoOp: Agent remains at current position
+        result.append((x, y))
 
         return result
 
